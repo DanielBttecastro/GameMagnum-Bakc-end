@@ -84,17 +84,25 @@ namespace WebApi.Controllers
         // POST: api/RoundsGames
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<RoundsGames>> PostRoundsGames(RoundsGames RoundsGames)
-        {
-          if (_context.RoundsGames == null)
-          {
-              return Problem("Entity set 'AppDBContext.RoundsGames'  is null.");
-          }
-            _context.RoundsGames.Add(RoundsGames);
-            await _context.SaveChangesAsync();
+public async Task<ActionResult<RoundsGames>> PostRoundsGames(RoundsGames RoundsGames)
+{
+    if (_context.RoundsGames == null)
+    {
+        return Problem("Entity set 'AppDBContext.RoundsGames' is null.");
+    }
 
-            return CreatedAtAction("GetRoundsGames", new { id = RoundsGames.Id }, RoundsGames);
-        }
+    // Validar que el Id_Options existe
+    if (!_context.Options.Any(o => o.Id == RoundsGames.Id_Options))
+    {
+        return BadRequest("El Id_Options proporcionado no existe.");
+    }
+
+    // Agregar el nuevo objeto a la base de datos
+    _context.RoundsGames.Add(RoundsGames);
+    await _context.SaveChangesAsync();
+
+    return CreatedAtAction("GetRoundsGames", new { id = RoundsGames.Id }, RoundsGames);
+}
 
         // DELETE: api/RoundsGames/5
         [HttpDelete("{id}")]
